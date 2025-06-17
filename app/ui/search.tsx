@@ -3,6 +3,8 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { useRef } from "react";
+
 export default function Search({ placeholder }: { placeholder: string }) {
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
@@ -20,6 +22,19 @@ export default function Search({ placeholder }: { placeholder: string }) {
 		replace(`${pathname}?${params.toString()}`);
 	}
 
+	const debounce = <T extends (...args: any[]) => void>(
+		fn: T,
+		delay: number
+	): ((...args: Parameters<T>) => void) => {
+		let timeoutId: ReturnType<typeof setTimeout>;
+
+		return (...args) => {
+			clearTimeout(timeoutId);
+			timeoutId = setTimeout(() => fn(...args), delay);
+		};
+	};
+	const debouncedSearch = useRef(debounce(handleSearch, 300)).current;
+
 	return (
 		<div className="relative flex flex-1 flex-shrink-0">
 			<label htmlFor="search" className="sr-only">
@@ -29,7 +44,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
 				className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
 				placeholder={placeholder}
 				onChange={(e) => {
-					handleSearch(e.target.value);
+					debouncedSearch(e.target.value);
 				}}
 				defaultValue={searchParams.get("query")?.toString()}
 			/>
