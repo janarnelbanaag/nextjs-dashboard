@@ -1,9 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
-import { useRef } from "react";
 
 export default function Search({ placeholder }: { placeholder: string }) {
 	const searchParams = useSearchParams();
@@ -12,6 +11,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
 
 	function handleSearch(term: string) {
 		const params = new URLSearchParams(searchParams);
+		params.set("page", "1");
 
 		if (term) {
 			params.set("query", term);
@@ -33,6 +33,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
 			timeoutId = setTimeout(() => fn(...args), delay);
 		};
 	};
+
 	const debouncedSearch = useRef(debounce(handleSearch, 300)).current;
 
 	return (
