@@ -9,7 +9,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
 	const pathname = usePathname();
 	const { replace } = useRouter();
 
-	function handleSearch(term: string) {
+	function handleSearch(term: string): void {
 		const params = new URLSearchParams(searchParams);
 		params.set("page", "1");
 
@@ -22,13 +22,13 @@ export default function Search({ placeholder }: { placeholder: string }) {
 		replace(`${pathname}?${params.toString()}`);
 	}
 
-	const debounce = <T extends (...args: any[]) => void>(
+	const debounce = <T extends (...args: Parameters<T>) => ReturnType<T>>(
 		fn: T,
 		delay: number
 	): ((...args: Parameters<T>) => void) => {
 		let timeoutId: ReturnType<typeof setTimeout>;
 
-		return (...args) => {
+		return (...args: Parameters<T>) => {
 			clearTimeout(timeoutId);
 			timeoutId = setTimeout(() => fn(...args), delay);
 		};
