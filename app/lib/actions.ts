@@ -7,7 +7,10 @@ import { redirect } from "next/navigation";
 import postgres from "postgres";
 import { z } from "zod";
 
-export async function authenticate(prevState: State, formData: FormData) {
+export async function authenticate(
+	prevState: string | undefined,
+	formData: FormData
+) {
 	try {
 		await signIn("credentials", formData);
 	} catch (error) {
