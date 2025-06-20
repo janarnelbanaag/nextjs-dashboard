@@ -1,10 +1,27 @@
 "use server";
 
-import { error } from "console";
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import postgres from "postgres";
 import { z } from "zod";
+
+export async function authenticate(prevState: State, formData: FormData) {
+	try {
+		await signIn("credentials", formData);
+	} catch (error) {
+		if (error instanceof AuthError) {
+			switch (error.type) {
+				case "CredentialsSignin":
+					return "Invalid Credentials.";
+				default:
+					return "Something went wrong.";
+			}
+		}
+		throw error;
+	}
+}
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 const FormSchema = z.object({
